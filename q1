@@ -1,0 +1,22 @@
+// https://bigfrontend.dev/problem/implement-curry
+
+
+/**
+Currying is a useful technique used in JavaScript applications.
+
+Please implement a curry() function, which accepts a function and return a curried one.
+
+ * @param { (...args: any[]) => any } fn
+ * @returns { (...args: any[]) => any }
+ */
+function curry(fn) {
+  return function result(...args) {
+    if (args.length >= fn.length) {
+      return fn(...args);
+    }
+    return result.bind(this, ...args);
+  }
+}
+
+
+// recall concepts of 'this', 'call/apply', 'bind'
