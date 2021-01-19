@@ -1,0 +1,52 @@
+function debounce(func, wait, option = {leading: false, trailing: true}) {
+  let timer = null;
+  const {leading, trailing} = option;
+  return function(...args) {
+     if (leading && !timer) {
+        func.apply(this, args);
+        timer = setTimeout(()=> {
+          timer = null;
+          clearTimeout(timer);
+        }, wait);
+       return;
+     } else if (trailing) {
+       clearTimeout(timer);
+       timer = setTimeout(()=> {
+         timer = null;
+         clearTimeout(timer);
+         func.apply(this, args);
+       }, wait)
+       return;
+     } 
+    clearTimeout(timer);
+    timer = setTimeout(()=> {
+        timer = null;
+        clearTimeout(timer);
+      }, wait);
+  }
+}
+
+/*******/
+function debounce(func, wait, option = {leading: false, trailing: true}) {
+  let timer = null;
+  let todo = null;
+  const {leading, trailing} = option;
+  return function(...args) {
+     if (leading && !timer) {
+        func.apply(this, args);
+     } else if (trailing) {
+       todo = args;
+     } 
+    clearTimeout(timer);
+    timer = null;
+
+    timer = setTimeout(()=> {
+      if (todo) {
+        func.apply(this, todo);
+        todo = null;
+      }
+        timer = null;
+        clearTimeout(timer);
+      }, wait);
+  }
+}
