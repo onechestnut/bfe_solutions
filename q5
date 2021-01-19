@@ -1,0 +1,39 @@
+
+/**
+ * @param {Function} func
+ * @param {number} wait
+ * @param {boolean} option.leading
+ * @param {boolean} option.trailing
+ */
+function throttle(func, wait, option = {leading: true, trailing: true}) {
+  // 1. function called
+  //   - if timer is null 
+  //     - leading = false, set a timer but no execute
+  //     - leading = true, excute and set a timer
+  //   - if timer is not null
+  //     - trailing = false, no stash, and do nothing
+  //     - trailing=true, stash it and execute when timer is up
+  const { leading, trailing } = option;  
+  let stash = null;
+  let timer = null;
+  let isStashCall = false;
+  return function result(...args) {
+    if (timer === null) {
+      if (leading || isStashCall) {
+        func.apply(this, args);
+        isStashCall = false;
+      }
+      timer = setTimeout(()=> {
+          clearTimeout(timer);
+          timer = null;
+          if (trailing && stash) {
+            isStashCall = true;
+            result.apply(this, stash);
+            stash = null;
+          }
+        }, wait);
+    } else if (trailing) {
+      stash = args.slice();
+    }
+  }
+}
