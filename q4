@@ -1,0 +1,29 @@
+/**
+ * @param {Function} func
+ * @param {number} wait
+ */
+function throttle(func, wait) {
+// 1. when called func
+//   - if not in cooling, execte and set a timer
+//   - if in cooling, stash it and replace old stash if it exist
+// 2. when timer is up
+//   - if has stash, execute stash and set a timer
+//   - no stash, do nothing
+  let stash = null;
+  let timer = null;
+  return function result(...args) {
+    if (timer === null) { // not in cooling
+      func.call(this, ...args);
+      timer = setTimeout(() => {
+        clearTimeout(timer);
+        timer = null;
+        if (stash !== null) {
+          result.apply(this, stash);
+          stash = null;
+        }
+      }, wait)
+    } else { // in cooling
+        stash = [...args];
+    }
+  }
+}
