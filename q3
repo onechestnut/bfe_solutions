@@ -1,0 +1,83 @@
+/**
+There is already Array.prototype.flat() in JavaScript (ES2019), which reduces the nesting of Array.
+const arr = [1, [2], [3, [4]]];
+
+flat(arr)
+ [1, 2, 3, [4]]
+
+flat(arr, 1)
+ [1, 2, 3, [4]]
+
+flat(arr, 2)
+ [1, 2, 3, 4]
+ 
+** follow up
+Are you able to solve it both recursively and iteratively?
+
+ * @param { Array } arr
+ * @param { number } depth
+ */
+ 
+// solution 1: dfs recursively
+function flat(arr, depth = 1) {
+  let res = [];
+  arr.forEach(val => {
+    if (Array.isArray(val) && depth >=1) {
+      const todo = flat(val, depth-1);
+      res = res.concat(todo);
+    } else {
+      res.push(val);
+    }
+  })
+  return res;
+}
+
+// solution 2: bfs
+/**
+ * @param { Array } arr
+ * @param { number } depth
+ */
+function flat(arr, depth = 1) {
+  let res = arr.slice();
+  while (depth >=1) {
+    let newArr = res.slice();
+    res = [];
+    let hasArr = false;
+    newArr.forEach(val => {
+      if (Array.isArray(val)) {
+        res.push(...val);
+        hasArr = true;
+      }else {
+        res.push(val);
+      }
+    }); 
+    if (!hasArr) break;
+    depth--;
+  }
+  return res;
+}
+
+// solution 3: dfs with stack. reverse the arr before return
+/**
+ * @param { Array } arr
+ * @param { number } depth
+ */
+function flat(arr, depth = 1) {
+   const stack = [[arr, depth]];
+   const result = [];
+   
+   while(stack.length > 0) {
+    const [temp, d] = stack.pop();
+    if (Array.isArray(temp) && d >= 0) {
+       temp.forEach(v => {
+         stack.push([v, d-1]);
+       })
+    }else {
+      result.push(temp);
+    }
+   }
+   result.reverse()
+   return result;
+}
+  
+
