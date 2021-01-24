@@ -1,0 +1,6 @@
+function shuffle(arr) {
+  arr.forEach((val, index) => {
+    const random = index + Math.floor(Math.random() * (arr.length - index));
+    [arr[random], arr[index]] = [arr[index], arr[random]];
+  });
+}
