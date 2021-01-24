@@ -1,0 +1,27 @@
+/**
+ * @param {string[][]} message
+ * @return {string}
+ */
+function decode(message) {
+  let i = 0;
+  let j = 0;
+  let res = '';
+  if (message.length < 1) return res;
+  let verLimit = message.length;
+  const horLimit = message[0].length;
+  let direction = 'down';
+  while (j < horLimit) {
+    res += message[i][j];
+    j++;
+    if (i === verLimit -1) {
+      i--;
+      direction = 'down';
+    }else if (i === 0) {
+      i++;
+      direction = 'up';
+    } else {
+       direction === 'up' ? i++ : i--; 
+    }
+  }
+  return res;
+}
