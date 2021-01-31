@@ -3,25 +3,27 @@
  * @param {Object} command
  */
 function update(data, command) {
+  // $push, $set, $merge, $apply(modify in place)
   const options = ['$push', '$set', '$merge', '$apply'];
-  const helper = (currObj, currCommand, currObjectKey) => {
-    let keyName = Object.keys(currCommand)[0];
+  const helper = (currObj, currCommand, prevObjectKey) => {
+    Object.keys(currCommand).map(keyName => {
    
     if (!options.includes(keyName)) {
       if (Array.isArray(currObj)) {
-        let numberKeyName = Number(currObjectKey);
-        if (currObjectKey) helper(currObj[numberKeyName], currCommand[keyName], numberKeyName);
+        let numberKeyName = Number(prevObjectKey);
+        if (prevObjectKey) helper(currObj[numberKeyName], currCommand[keyName], numberKeyName);
         else helper(currObj, currCommand[keyName], keyName);
       } else {
-          if (currObjectKey) helper(currObj[currObjectKey], currCommand[keyName], keyName); 
+          if (prevObjectKey) helper(currObj[prevObjectKey], currCommand[keyName], keyName); 
           else helper(currObj, currCommand[keyName], keyName);
       }
     }
      
+
     if (keyName === '$push') {
-      if (currObjectKey) {
-      if (!Array.isArray(currObj[currObjectKey])) throw new Error('Data type not allowed.')
-      currObj[currObjectKey] = [...currObj[currObjectKey], ...currCommand[keyName]];
+      if (prevObjectKey) {
+      if (!Array.isArray(currObj[prevObjectKey])) throw new Error('Data type not allowed.')
+      currObj[prevObjectKey] = [...currObj[prevObjectKey], ...currCommand[keyName]];
       } else {
         if (!Array.isArray(currObj)) throw new Error('Data type not allowed.')
         data = [...currObj, ...currCommand[keyName]];
@@ -29,18 +31,19 @@ function update(data, command) {
     }
 
     if (keyName === '$set') {
-      currObj[currObjectKey] = currCommand[keyName];
+      currObj[prevObjectKey] = currCommand[keyName];
     }
 
     if (keyName === '$merge') {
-      if (typeof currObj[currObjectKey] !== 'object') throw new Error('Data type not allowed.');
-      Object.assign(currObj[currObjectKey], currCommand[keyName]);
+      if (typeof currObj[prevObjectKey] !== 'object') throw new Error('Data type not allowed.');
+      Object.assign(currObj[prevObjectKey], currCommand[keyName]);
     }
 
     if (keyName === '$apply') {
-      currObj[currObjectKey] = currCommand[keyName].call(this, currObj[currObjectKey]);
+      currObj[prevObjectKey] = currCommand[keyName].call(this, currObj[prevObjectKey]);
     }
     return;
+    })
   }
 
   helper(data, command, null);
