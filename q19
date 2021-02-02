@@ -1,0 +1,70 @@
+
+/**
+ * @param {HTMLElement} rootA
+ * @param {HTMLElement} rootB - rootA and rootB are clone of each other
+ * @param {HTMLElement} nodeA
+ */
+const findCorrespondingNode = (rootA, rootB, target) => {
+  if (rootA === target) {
+    return rootB;
+  }
+  const allANodes = rootA.children;
+  const allBNodes = rootB.children;
+
+  if (!allANodes || allANodes.length < 1) return;
+  for (let i = 0; i < allANodes.length; i++) {
+    let res = findCorrespondingNode(allANodes[i], allBNodes[i], target);
+    if (res) {
+      return res;
+    }
+  }
+}
+
+/***********************dfs**********************/
+
+/**
+ * @param {HTMLElement} rootA
+ * @param {HTMLElement} rootB - rootA and rootB are clone of each other
+ * @param {HTMLElement} nodeA
+ */
+const findCorrespondingNode = (rootA, rootB, target) => {
+  const stackA = [rootA];
+  const stackB = [rootB];
+
+  while(stackA.length > 0) {
+    let curA = stackA.pop();
+    let curB = stackB.pop();
+    if (curA === target) {
+      return curB;
+    }
+    if (curA.children.length > 0) {
+      stackA.push(...curA.children);
+      stackB.push(...curB.children);
+    }
+  }
+}
+
+/*********** bfs *************/
+
+/**
+ * @param {HTMLElement} rootA
+ * @param {HTMLElement} rootB - rootA and rootB are clone of each other
+ * @param {HTMLElement} nodeA
+ */
+const findCorrespondingNode = (rootA, rootB, target) => {
+  const qA = [rootA];
+  const qB = [rootB];
+
+  while(qA.length > 0) {
+    let curA = qA.shift();
+    let curB = qB.shift();
+    if (curA === target) {
+      return curB;
+    }
+    if (curA.children.length > 0) {
+      qA.push(...curA.children);
+      qB.push(...curB.children);
+    }
+  }
+}
+
