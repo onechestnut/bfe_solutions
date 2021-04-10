@@ -1,0 +1,124 @@
+// getAPI is bundled with your code, config will only be some plain objects.
+// const getAPI = <T>(path: string, config: SomeConfig): Promise<T> => { ... }
+
+
+// you code here maybe, if you want some outer scope.
+// 我自己的solution
+/**
+ * @param {string} path
+ * @param {object} config
+ * only plain objects/array made up serializable primitives
+ * @returns {Promise<any>}
+ */
+function getAPI() {return new Promise(()=> 1)}
+const cache = new Map();
+const MAX_SIZE = 5;
+const MAX_TIME = 1000; //ms
+function getAPIWithMerging(path, config) {
+  function getKeyName() {
+      function helper(obj) {
+        if (Array.isArray(obj)) {
+          obj.map(item => `${helper(item)},`)
+        } else if (typeof object === 'object') {
+          const keys = Object.keys(obj);
+          keys.sort(); // !!!!!!!!!!!!!注意要sort以确保顺序一样
+          keys.map(k => `${k}_${helper(obj[k])},`)  
+        } else if (typeof object === 'string') {
+          return obj;
+        } else {
+          return String(obj);
+        }
+      } 
+      return `${path}_${helper(config)}`;
+  }
+  function removeExpire() {
+    const now = Date.now();
+    let node = cache.entries().next();
+    while(node.value) {
+      if (now - node.value.timestamp > 1000) {
+        node = node.next();
+        cache.delete(node.key);
+      } else {
+        break;
+      }
+    }
+  }
+  removeExpire();
+  const keyName = getKeyName();
+  if (cache.has(keyName)) return cache.get(keyName).res;
+  
+  if (cache.size >= 5) cache.delete(cache.entries().next().key);
+  const res = getAPI(path, config);
+  cache.set(keyName, {res: res, timestamp: Date.now()});
+  return res;
+}
+
+getAPIWithMerging.clearCache = () => {
+   cache.clear();
+}
+
+
+// JSER答案
+const cache = new Map()
+
+const hash = (obj) => {
+  switch (Object.prototype.toString.call(obj)) {
+    case '[object Null]':
+      return 'null'
+    case '[object Undefined]':
+      return 'undefined'
+    case '[object Number]':
+    case '[object Boolean]':
+      return obj.toString()
+    case '[object String]':
+      return obj
+    case '[object Object]':
+      const keys = Object.keys(obj)
+      keys.sort()
+      return `{${keys.map(key => `"${key}":${hash(obj[key])}`).join(',')}}`
+      case '[obect Array]':
+      return `[${obj.map(item => hash(item)).join(',')}]`   
+  }
+}
+
+const MAX_CACHE = 5
+const CACHE_TIME_LIMIT = 1000
+/**
+ * @param { string } path
+ * @param { object } config
+ * only plain objects, no strange input in this problem
+ * @returns { Promise<any> }
+ */
+function getAPIWithMerging(path, config) {
+  // serialize the hash, with path + config
+  const requestHash = hash({path, config})
+  
+  // cache is available
+  if (cache.has(requestHash)) {
+    const entry = cache.get(requestHash)
+    if (Date.now() - entry.triggered <= CACHE_TIME_LIMIT) {
+      return entry.promise
+    }
+    cache.delete(requestHash)
+  }
+  
+  const promise = getAPI(path, config)
+  cache.set(requestHash, {
+    promise,
+    triggered: Date.now()
+  })
+  
+  // remove the oldest cache
+  if (cache.size > MAX_CACHE) {
+    for (let [hash] of cache) {
+      cache.delete(hash)
+      break
+    }
+  }
+  
+  return promise
+}
+
+getAPIWithMerging.clearCache = () => {
+   cache.clear()
+}
