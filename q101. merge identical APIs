@@ -18,17 +18,18 @@ function getAPIWithMerging(path, config) {
   function getKeyName() {
       function helper(obj) {
         if (Array.isArray(obj)) {
-          obj.map(item => `${helper(item)},`)
-        } else if (typeof object === 'object') {
+          return `[${obj.map(item => helper(item)).join(',')}]`
+        } else if (typeof obj === 'object') {
           const keys = Object.keys(obj);
           keys.sort(); // !!!!!!!!!!!!!注意要sort以确保顺序一样
-          keys.map(k => `${k}_${helper(obj[k])},`)  
-        } else if (typeof object === 'string') {
+          return `${keys.map(k => `"${k}":${helper(obj[k])}`).join(',')}` 
+        } else if (typeof obj === 'string') {
           return obj;
         } else {
           return String(obj);
         }
-      } 
+     }
+  
       return `${path}_${helper(config)}`;
   }
   function removeExpire() {
