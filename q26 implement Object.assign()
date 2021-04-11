@@ -1,0 +1,38 @@
+function objectAssign(target, ...sources) {
+  if (target === null || target === undefined) throw Error('invalid target');
+  if (typeof target === 'number') target = new Number(target);
+  if (typeof target === 'string') target = new String(target);
+  if (typeof target === 'boolean') target = new Boolean(target);
+  
+  //上面两行也可以写成
+  /*
+    if (typeof target === 'number' || typeof target === 'string' || typeof target === 'boolean') 
+    target = Object(target);
+  */
+
+  const helper = (original) => {
+    Object.keys(original).forEach(k=> {
+        const des = Object.getOwnPropertyDescriptor(target, k);
+        if (!des || des.writable) {
+          target[k] = original[k];
+        } else throw Error('not writable property')
+    })
+
+    Object.getOwnPropertySymbols(original).forEach(k=> {
+        const des = Object.getOwnPropertyDescriptor(target, k);
+        if (!des || des.writable) {
+          target[k] = original[k];
+        } else throw Error('not writable property')
+    })
+  }
+  if (Array.isArray(sources)) {
+    sources.forEach(item => {
+      if (typeof item === 'object' && item || typeof item === 'function') helper(item);
+      if (typeof item === 'string') helper(item.split(''));
+    });
+  } else {
+    helper(sources);
+  }
+
+  return target;
+}
