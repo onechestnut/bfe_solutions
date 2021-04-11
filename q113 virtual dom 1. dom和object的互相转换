@@ -1,0 +1,56 @@
+/**
+ * @param {HTMLElement} 
+ * @return {object} object literal presentation
+ */
+
+function virtualize(dom) {
+  if (dom.nodeType === 3) return dom.textContent;
+  const temp = {
+    type: dom.nodeName.toLowerCase(),
+    props: {}
+  };
+  // write all attributes
+  for (attr of dom.attributes) {
+    if (attr.nodeName === 'class') {
+      temp.props['className'] = attr.textContent;
+    }else temp.props[attr.nodeName] = attr.textContent;
+  }
+  // write all children
+  if (dom.childNodes.length > 0) {
+    temp.props.children = [];
+    for (const child of dom.childNodes) {
+      temp.props.children.push(virtualize(child));
+    }
+    if (temp.props.children.length === 1) {
+      temp.props.children = temp.props.children[0];
+    }
+  } 
+  return temp;
+}
+
+
+/**
+ * @param {object} valid object literal presentation
+ * @return {HTMLElement} 
+ */
+function render(obj) {
+  if (typeof obj === 'string') {
+    return document.createTextNode(obj);
+  }
+  console.log('obj', obj);
+  let curr = document.createElement(obj.type);
+  for (let prop in obj.props) {
+    if (prop === 'children' && Array.isArray(obj.props[prop])) {
+        for (const child of obj.props[prop]) {
+          curr.appendChild(render(child))
+        }
+    } else if (prop === 'children') {
+       curr.appendChild(render(obj.props[prop]));
+    }
+    else {
+      if (prop === 'className') curr.setAttributeNS(null, 'className', obj.props[prop])
+      else curr.setAttribute(prop, obj.props[prop])
+    }
+  }
+  return curr;
+}
