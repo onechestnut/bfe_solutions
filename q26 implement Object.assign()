@@ -36,3 +36,29 @@ function objectAssign(target, ...sources) {
 
   return target;
 }
+
+// 自己做了一个升级版
+function objectAssign(target, ...sources) {
+  if (target === null || target === undefined) throw Error('invalid target');
+
+  if (typeof target === 'number' || typeof target === 'string' || typeof target === 'boolean') 
+  target = Object(target);
+
+
+  const helper = (original) => {
+    [...Object.keys(original), ...Object.getOwnPropertySymbols(original)].forEach(k=> {
+        const des = Object.getOwnPropertyDescriptor(target, k);
+        if (!des || des.writable) {
+          target[k] = original[k];
+        } else throw Error('not writable property')
+    })
+  }
+
+  for (const source of sources) { // map, string, array, object
+    if (source || source === 0) 
+      helper(source);
+  }
+
+
+  return target;
+}
