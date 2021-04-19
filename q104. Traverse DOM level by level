@@ -1,0 +1,13 @@
+function flatten(root) {
+  if (!root) return [];
+  const q = [root];
+  const res = [];
+
+  while(q.length > 0) {
+    const curr = q.shift();
+    res.push(curr);
+    q.push(...curr.children);
+  }
+
+  return res;
+}
