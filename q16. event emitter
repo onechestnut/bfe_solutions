@@ -1,0 +1,61 @@
+// please complete the implementation
+class EventEmitter {
+  constructor() {
+    this.emitterMap = {};
+  }
+  subscribe(eventName, callback) {
+  	if (this.emitterMap[eventName]) this.emitterMap[eventName].push(callback);
+    else {
+      this.emitterMap[eventName] = [callback]
+    }
+
+    return {
+      release: ()  => {
+        const index = this.emitterMap.length - 1;
+        this.emitterMap[eventName].splice(index, 1);
+      }
+    }
+  }
+  
+  emit(eventName, ...args) {
+    for (const fn of this.emitterMap[eventName]) {
+      if (fn) fn.apply(this, args);
+    }
+  	
+  }
+}
+
+/********** better version with map **************/
+// please complete the implementation
+class EventEmitter {
+  constructor() {
+    this.emitterMap = {};
+  }
+  subscribe(eventName, callback) {
+  	if (this.emitterMap[eventName]) {
+        this.emitterMap[eventName].set(callback, (this.emitterMap[eventName].get(callback) || 0) + 1)
+    }
+    else {
+      this.emitterMap[eventName] = new Map();
+      this.emitterMap[eventName].set(callback, 1);
+    }
+
+    return {
+      release: ()  => {
+        const currCount = this.emitterMap[eventName].get(callback);
+        if (currCount <= 1) this.emitterMap[eventName].delete(callback);
+        else this.emitterMap[eventName].set(callback, currCount - 1);
+      }
+    }
+  }
+  
+  emit(eventName, ...args) {
+    for (const [fn, count] of this.emitterMap[eventName]) {
+      let index = 1;
+      while(index <= count) {
+        fn.apply(this, args);
+        index++;
+      }
+    }
+  }
+}
