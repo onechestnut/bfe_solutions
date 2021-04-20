@@ -1,0 +1,83 @@
+function highlightKeywords(html, keywords) {
+  const kwSet = new Set(keywords)
+  const htmlArr = html.split(' ');
+  const res = [];
+  htmlArr.forEach(h => {
+    let curr = h
+    for (const kw of keywords) {
+      if (h.includes(kw)) {
+        curr = h.split(kw).join(`<em>${kw}</em>`);
+      }
+    }
+
+    res.push(curr);
+  })
+
+  return res.join(' ');
+};
+
+
+/*
+todo: unifinished
+*/
+
+/**
+ * @param {string} html
+ * @param {string[]} keywords
+ */
+function highlightKeywords(html, keywords) {
+  const kwSet = new Set(keywords)
+  const htmlArr = html.split(' ');
+  const res = [];
+  htmlArr.forEach(h => {
+    let curr = h
+    // all macth
+    if (kwSet.has(h)) {
+      res.push(`<em>${h}</em>`)
+    } else {
+      // possible partial match
+      const intervals = [];
+      for (const kw of keywords) {
+        for (let i = 0; i <= h.length - kw.length; i++) {
+          if (kw === h.substr(i, kw.length)) {
+            intervals.push([i, i+kw.length-1]);
+          }
+        }
+      }
+      const merged = []; 
+      if (intervals.length === 1) {
+        const high = intervals[0];
+        curr = h.substring(0, high[0]) + '<em>' + h.subString(high[0], high[1] + 1) + '</em>' + h.substring(high[1] + 1);
+        } else {
+          // merge intervals
+           j = 0;
+          intervals.sort((a, b) => a[0] - b[0]);
+          while (j < intervals.length) {
+            if (j === length-1) {
+              sorted.push(intervals[j]);
+            } else {
+              if (intervals[j+1][0] <= intervals[j][1]) {
+                intervals[j+1] = [intervals[j][0], intervals[j+1][1]]
+              } else {
+                merged.push(intervals[j]);
+              }
+            }
+          }
+
+
+          
+
+          merged.forEach(place => {
+            // todo
+          })
+
+
+        }
+
+
+    }
+    res.push(curr);
+  })
+
+  return res.join(' ');
+};
