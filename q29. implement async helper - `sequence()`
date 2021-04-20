@@ -1,0 +1,27 @@
+function sequence(funcs){
+  return function(callback, data) {
+    let nextFuncIndex = 0;
+    function callNextFunc(currData) {
+      if (nextFuncIndex >= funcs.length) {
+        callback(undefined, currData);
+        return;
+      }
+ 
+      const nextFunc = funcs[nextFuncIndex];
+      nextFuncIndex++;
+      // 在哪里完成的*2的运算？error从哪里来？
+      // asyncTimes2里面setTimeout(() => callback(null, num*2)传入erro为null，newData为num*2)
+      nextFunc((error, newData) => {
+        if (error) {
+          callback(error, undefined);
+        } else {
+          callNextFunc(newData)
+        }
+      }, currData);
+    }
+
+    callNextFunc(data);
+  }
+}
+
+/**************** promise ******************/
