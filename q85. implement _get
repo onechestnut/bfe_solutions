@@ -1,0 +1,18 @@
+/********* recursion ***********/
+function get(source, path, defaultValue = undefined) {
+  if (path.length <= 0) return defaultValue;
+
+  return helper(source, path, defaultValue);
+
+  function helper(source, path, defaultValue) {
+    if (path.length <= 0) {
+      return source;
+    }
+    const pathList = Array.isArray(path) ? path.slice() : path.split(/\.|\[|\]/g);
+    if (pathList[pathList.length-1] === '') pathList.pop();
+    const nextKey = pathList.shift();
+    if (source[nextKey]) return helper(source[nextKey], pathList, defaultValue);
+    else return defaultValue;
+  }
+}
+
