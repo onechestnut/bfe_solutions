@@ -1,0 +1,44 @@
+function getHeight(tree) {
+  if (!tree) return 0;
+  function helper(node, currHeight) {
+    if (!node) return currHeight;
+
+    const children = [...node.children];
+    if (children.length === 0) return currHeight;
+    const depth = children.map(ele => helper(ele, currHeight+1));
+    const max = Math.max(...depth);
+    return max;
+  }   
+
+  return helper(tree, 1);      
+}
+
+
+//改良版。更简洁。遍历node collection可以用。。of。。还有不用传height，只需要每次返回+1就行
+function getHeight(tree) {
+  currHeight = 0;
+  if (!tree) return currHeight;
+
+  for (let child of tree.children) {
+     currHeight = Math.max(currHeight, getHeight(child));
+  }
+    
+  return currHeight + 1;     
+}
+
+// bfs
+function getHeight(tree) {
+  currHeight = 0;
+  if (!tree) return currHeight;
+  let q = [tree];
+
+  while(q.length > 0) {
+    currHeight++;
+    let tmp = q.slice();
+    q.length = 0;
+    for (let ele of tmp) {
+      q.push(...ele.children);
+    }
+  }
+  return currHeight;
+}
