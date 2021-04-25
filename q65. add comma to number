@@ -1,0 +1,19 @@
+function addComma(num) {
+  let sign = 1;
+  if (num < 0) {
+    sign = -1;
+  }
+  num = num * sign;
+  const numList = String(num).split('.');
+  const [integer, fraction=''] = numList;
+  let i = integer.length % 3;
+  let res = integer.substring(0, i);
+  for (let i = integer.length % 3; i < integer.length; i +=3 ) {
+    if (i !== 0) res += ',' + integer.substring(i, i+3);
+    else res += integer.substring(i, i+3);
+  }
+
+  if (fraction) res += '.' + fraction;
+  if (sign < 0) res = '-' + res;
+  return res;
+}
