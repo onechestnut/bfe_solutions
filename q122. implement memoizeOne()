@@ -1,0 +1,21 @@
+function compare(arr1, arr2) {
+  return arr1.length === arr2.length && arr1.every((ele, index) => ele === arr2[index]);
+}
+
+function memoizeOne(func, isEqual=compare) {
+  let lastRes = null;
+  let lastArgs = [];
+  let isCalled = false;
+  let lastThis = null;
+
+  return function(...args) {
+    if (isEqual(lastArgs, args) && isCalled && lastThis === this) return lastRes;
+    else {
+      lastRes = func.apply(this, args);
+      lastArgs = args.slice();
+      lastThis = this;
+      isCalled = true;
+      return lastRes;
+    }
+  }
+}
