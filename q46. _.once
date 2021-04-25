@@ -1,0 +1,11 @@
+function once(func) {
+  let isCalled = false;
+  let result;
+  return function(...args) {
+    if (isCalled) return result;
+
+    result = func.call(this, ...args);
+    isCalled = true;
+    return result;
+  }
+}
