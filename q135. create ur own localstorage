@@ -1,0 +1,32 @@
+//注意不可以用setTimeout去delete，在setItem的时候。因为如果window关掉，这个delete操作就丢失了。
+window.myLocalStorage = {
+  getItem(key) {
+    try {
+      const res = JSON.parse(localStorage.getItem(key));
+
+      if (res.expire && Date.now() >= res.expire) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      return res.value;
+    } 
+    catch {
+      return null;
+    }
+  },
+  
+  setItem(key, value, maxAge) {
+    localStorage.setItem(key, JSON.stringify({
+      value,
+      expire: typeof maxAge === 'number' ? Date.now() + maxAge : undefined,
+      }));
+  },
+  
+  removeItem(key) {
+    return localStorage.removeItem(key);
+  },
+  
+  clear() {
+    localStorage.clear();
+  }
+}
