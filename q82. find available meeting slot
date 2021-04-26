@@ -1,0 +1,40 @@
+function findMeetingSlots(schedules) {
+  if (schedules.length === 0) return [[0, 24]];
+  const allSchedules = [];
+  const res = [];
+  schedules.forEach(ele => allSchedules.push(...ele));
+  // 用一个set记录所有被占用的时间。 9意思是8-9被占用。
+  const trackSet = new Set();
+  allSchedules.forEach((time) => {
+    const [start, end] = time;
+    for (let i = start + 1; i <=end; i++) {
+      trackSet.add(i);
+    } 
+  })
+  //遍历0~24，如果在set里面则被占用。
+  let j = 0;
+  let tmpStart = null;
+  let tmpEnd = null;
+  while(j <= 24) {
+    if (!trackSet.has(j)) {
+      if (tmpStart !== null) {
+        tmpEnd = j;
+      } else {
+        tmpStart = j;
+      }
+    } else {
+        if (tmpStart !== null && tmpEnd !== null) {
+          tmpStart > 0 ? res.push([tmpStart - 1, tmpEnd]) : res.push([tmpStart, tmpEnd]);
+        } else if (tmpStart !== null && tmpStart > 0) res.push([tmpStart - 1, tmpStart]);
+        tmpStart = null;
+        tmpEnd = null;
+      }
+      j++;
+    }
+  if (!trackSet.has(24) && tmpStart !== null) tmpStart > 0 ? res.push([tmpStart - 1, 24]) : res.push([tmpStart, 24]);
+  return res;
+}
+
+
+
+// 
