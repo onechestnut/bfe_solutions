@@ -1,0 +1,21 @@
+function curry(func) {
+  const s = curry.placeholder;
+  return function result(...args) {
+    const filtered = args.slice(0, func.length).filter(val => val !== s)
+    if (filtered.length >= func.length) {
+      return func(...args);
+    }
+    return function next(...nextArgs) {
+      if (args.includes(s)) {
+        args.forEach((val, ind) => {
+          if (val === s && nextArgs.length>0) {
+            args[ind] =  nextArgs.shift();
+          }
+        })
+      }
+      return result(...args, ...nextArgs);
+    }
+  }
+}
+
+curry.placeholder = Symbol()
