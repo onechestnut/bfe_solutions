@@ -1,0 +1,33 @@
+function LazyMan(name, logFn) {
+  const q = [[logFn, `Hi, I'm ${name}`]];
+
+  function sleep(sec) {
+    await new Promise(resolve => {
+      setTimeout(() => {
+        resolve(sec);
+      })
+    }, sec * 1000);
+  }
+  const obj =  {
+    eat = (food) => {
+      q.push([logFn, `Eat ${food}.`])
+      return obj;
+    },
+    sleep = (sec) => {
+      q.push([logFn, `(after ${sec} seconds)`]);
+      q.push([sleep, sec]);
+      q.push([logFn, `Wake up after ${sec} second.`]) 
+      return obj;
+    },
+    sleepFirst = (sec) => {
+      q.unshift([logFn, `(after ${sec} seconds)`]);
+      q.unshift([sleep, sec]);
+      q.unshift([logFn, `Wake up after ${sec} second.`])
+      return obj;
+    },
+  }
+
+  return obj;
+  // excute only when finish chaining. how to see if it's finished chaining? 
+  q.forEach(([func, message]) => func(message));
+}
