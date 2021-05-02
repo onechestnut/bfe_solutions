@@ -1,0 +1,22 @@
+// 注意有关circular的问题。。用map记录访问过的obj。注意，这里不需要访问过的object相等于此时的b，只需要访问过即可。因为只要是访问过的，如果有不相等的，早已经返回了false。就算还在比较这个obj的过程中
+//之后遇到不同的，也还是会返回false的。
+const hisA = new Map();
+
+function isEqual(a, b) {
+  const typeA = typeof a;
+  const typeB = typeof b;
+  if (typeA !== typeB) return false;
+  if (typeA !== 'object') {
+    return a === b;
+  }
+  // check if already compared
+  if (hisA.has(a)) return true;
+  // check if object size are same
+  hisA.set(a, b);
+  if (Object.keys(a).length !== Object.keys(b).length) return false;
+
+  for (let k in a) {
+    if (!isEqual(a[k], b[k])) return false;
+  }
+  return true;
+}
