@@ -1,0 +1,17 @@
+首先不需要用recursion，第二只需要最后handle amount小于res的情况，不需要在forloop里面处理。
+const fetchListWithAmount = async (amount = 5) => {
+  let res = [];
+  let lastId = undefined;
+
+  while(res.length < amount) {
+     const { items } = await fetchList(lastId);
+     if (items && items.length > 0) {
+       res.push(...items);
+       lastId = items[items.length-1].id;
+     } else {
+       break; //处理还没到amount但已经没有server端的数据了
+     }
+  }
+
+  return res.slice(0, amount);
+}
