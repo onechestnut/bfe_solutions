@@ -1,0 +1,18 @@
+function race(funcs){
+  return function(callback) { // first在call的时候传入的callback
+    let handled = false;
+    for (let func of funcs) {
+    //因为要处理handled，此处再合成一个calllback
+    // 注意这里e,v分别就是 callback(undefined, 2)里面的undefined和2.
+      const newCb = (err, data) => { //传入async1， async2.。
+        if (!handled) {
+          handled = true;
+          callback(err, data)
+        }
+      }
+      func(newCb);
+    }
+  }
+}
+
+此处两个callback
