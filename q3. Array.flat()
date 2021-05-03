@@ -1,0 +1,27 @@
+function flat(arr, depth=1){
+  // recursive
+  
+  if (!Array.isArray(arr) || depth < 0) return [arr];
+  let res = [];
+  arr.forEach(ele => {
+    res.push(...flat(ele, depth - 1));
+  })
+
+  return res;
+
+  // iteratively bfs
+  /*
+  const res = [];
+  const stack = arr.map(ele => [ele, depth]);
+  while(stack.length > 0) {
+     const [ele, dep] = stack.pop();
+
+      if (Array.isArray(ele) && dep > 0) {
+        ele.forEach(e => {
+          stack.push([e, dep -1]);
+        })
+      } else res.push(ele);
+  }
+  return res.reverse();
+  */
+}
