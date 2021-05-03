@@ -1,0 +1,24 @@
+// 这种题目让我不舒服的地方是：弄不清楚callback怎么传进去的，啥时候传的。cakkback会怎么被call。
+// 就这么想。不用管err和data具体是啥，callback func里面的内容就是已经有data和error的情况。就写有了以后应该怎么处理
+function parallel(funcs){
+  const funcLength = funcs.length;
+  let currResList = [];
+  let count = 0;
+  let called = false;
+  return function(callback) {
+    for (let i = 0; i < funcLength; i++) {
+      funcs[i]((err, data) => {
+        if (err && !called) {
+          callback(err, undefined);
+          called = true;
+        } 
+
+        currResList[i] = data;
+        count++;
+        if (count === funcLength && !called) {
+          callback(err, currResList);
+        }
+      })
+    }
+  }
+}
