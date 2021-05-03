@@ -1,0 +1,23 @@
+//抄的别人的答案
+function isValidIP(str) {
+  const isValidIP4 = str => {
+    const arr = str.split('.');
+    if (arr.length !== 4) return false;
+    for (const part of arr) {
+      const num = Number.parseInt(part, 10);
+      if (num < 0 || num > 255 || num.toString() !== part) return false;
+    }
+    return true;
+  };
+  const isValidIP6 = str => {
+    const arr = str.split(':');
+    if (arr.length !== 8) return false;
+    for (const part of arr) {
+      const num = Number.parseInt(part, 16);
+      if (num < 0 || num > 0xffff || num.toString(16).padStart(part.length, '0') !== part.toLowerCase()) return false;
+      // num是十进制的数字。num.toString(16) return hex number in string. padStart就是一直用0+part直到到达一定长度。会一直堆叠0.这个时候再比较和original是否相同。
+    }
+    return true;
+  };
+  return isValidIP4(str) || isValidIP6(str);
+}
