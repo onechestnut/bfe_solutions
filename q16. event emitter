@@ -59,3 +59,38 @@ class EventEmitter {
     }
   }
 }
+
+/*************** 用map做emittermap，稍微改进了一下**********************/
+class EventEmitter {
+  constructor() {
+    this.emitterMap = new Map();
+  }
+  subscribe(eventName, callback) {
+  	if (this.emitterMap.has(eventName)) {
+        this.emitterMap.get(eventName).set(callback, (this.emitterMap.get(eventName).get(callback) || 0) + 1)
+    }
+    else {
+      this.emitterMap.set(eventName, new Map());
+      this.emitterMap.get(eventName).set(callback, 1);
+    }
+
+    return {
+      release: ()  => {
+        const currCount = this.emitterMap.get(eventName).get(callback);
+        if (currCount <= 1) this.emitterMap.get(eventName).delete(callback);
+        else this.emitterMap.get(eventName).set(callback, currCount - 1);
+      }
+    }
+  }
+  
+  emit(eventName, ...args) {
+    for (const [fn, count] of this.emitterMap.get(eventName)) {
+      let index = 1;
+      while(index <= count) {
+        fn.apply(this, args);
+        index++;
+      }
+    }
+  }
+}
+
