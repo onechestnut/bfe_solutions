@@ -68,3 +68,20 @@ const findCorrespondingNode = (rootA, rootB, target) => {
   }
 }
 
+/**************** record path in A, time complecity is  ****************/
+const findCorrespondingNode = (rootA, rootB, target) => {
+  if (rootA === target) return rootB;
+
+  const path = [];
+  let node = target;
+  while(node !== rootA) {
+    const currParent = node.parentElement;
+    const index = [...currParent.children].indexOf(node);
+    path.push(index);
+    node = currParent;
+  }
+
+  return path.reduceRight((result, index) => result.children[index], rootB);
+}
+
+
