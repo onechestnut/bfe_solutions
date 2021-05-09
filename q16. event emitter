@@ -6,26 +6,51 @@ class EventEmitter {
   subscribe(eventName, callback) {
   	if (this.emitterMap[eventName]) this.emitterMap[eventName].push(callback);
     else {
-      this.emitterMap[eventName] = [callback]
+      this.emitterMap[eventName] = [callback];
     }
+    const index = this.emitterMap[eventName].length - 1; // remember the place. and just delete the element, not spice. so we remeber which instance already called release
 
     return {
-      release: ()  => {
-        const index = this.emitterMap.length - 1;
-        this.emitterMap[eventName].splice(index, 1);
+      release: () => {
+        delete this.emitterMap[eventName][index];
       }
     }
   }
   
   emit(eventName, ...args) {
     for (const fn of this.emitterMap[eventName]) {
-      if (fn) fn.apply(this, args);
+      if (fn) fn.apply(this, args); // can be empty in array due to release
     }
-  	
   }
 }
 
-/********** better version with map **************/
+/********上一版的改进版，用map而不是简单object ***********/
+class EventEmitter {
+  constructor() {
+    this.emitterMap = new Map();
+  }
+  subscribe(eventName, callback) {
+  	if (this.emitterMap.has(eventName)) this.emitterMap.get(eventName).push(callback);
+    else {
+      this.emitterMap.set(eventName, [callback]);
+    }
+    const index = this.emitterMap.get(eventName).length - 1;
+
+    return {
+      release: () => {
+        delete this.emitterMap.get(eventName)[index];
+      }
+    }
+  }
+  
+  emit(eventName, ...args) {
+    for (const fn of this.emitterMap.get(eventName)) {
+      if (fn) fn.apply(this, args);
+    }
+  }
+}
+
+/********** better version with map.event作为key，value是一个map。这里面map的key是callback，value是数字，表示有几次这个callback。但是没有可以确定release可以确定的release哪一个instance **************/
 // please complete the implementation
 class EventEmitter {
   constructor() {
@@ -60,7 +85,7 @@ class EventEmitter {
   }
 }
 
-/*************** 用map做emittermap，稍微改进了一下**********************/
+/*************** 用map做emittermap，稍微改进了一下上一个版本**********************/
 class EventEmitter {
   constructor() {
     this.emitterMap = new Map();
