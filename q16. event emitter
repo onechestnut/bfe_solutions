@@ -141,3 +141,40 @@ class EventEmitter {
     }
   }
 }
+
+/ *************** 用id来track每一次subscribe，删除也用id来删除。保证删除的是正确的那一个 ******************/
+class EventEmitter {
+  constructor() {
+    this.data = new Map()
+    this.id = -1
+  }
+
+  subscribe(eventName, callback) {
+    if (!this.data.has(eventName)) {
+      this.data.set(eventName, new Map())
+    }
+
+    this.id++
+    
+    const subs = this.data.get(eventName)
+    const id = this.id
+    subs.set(id, callback)
+    
+    return {
+      release: function () {
+        subs.delete(id)
+      }
+    }
+  }
+  
+  emit(eventName, ...args) {
+   if (!this.data.has(eventName)) {
+     return
+   }
+
+   const subs = this.data.get(eventName)
+   for (let cb of subs.values()) {
+     cb(...args)
+   }
+  }
+}
