@@ -119,3 +119,25 @@ class EventEmitter {
   }
 }
 
+/*********** 简单粗暴版本，用array。每次release的时候，filter掉callback相符的element***************/
+class EventEmitter {
+  constructor() {
+    this.emitterMap = {};
+  }
+
+  subscribe(eventName, callback) {
+    this.emitterMap[eventName] = this.emitterMap[eventName] || [];
+    this.emitterMap[eventName].push(callback);
+    return {
+      release: () => {
+        this.emitterMap[eventName] = this.emitterMap[eventName].filter((cb) => cb !== callback);
+      }
+    }
+  }
+  
+  emit(eventName, ...args) {
+    if (this.emitterMap[eventName]) {
+      this.emitterMap[eventName].forEach((callback) => callback(...args));
+    }
+  }
+}
