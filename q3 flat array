@@ -82,3 +82,21 @@ function flat(arr, depth = 1) {
   }
   return arr;
 }
+
+/******************* 注意，这个版本是没有depth版本的，flat到底。面试专用****************、
+function flat(arr, depth = 1) {
+  const stack = arr;
+  const res = [];
+  
+  while(stack.length > 0) {
+    const curr = stack.pop();
+    if (Array.isArray(curr)) {
+      stack.push(...curr);
+    } else {
+      res.push(curr);
+    }
+    depth--;
+  }
+
+  return res.reverse();
+}
