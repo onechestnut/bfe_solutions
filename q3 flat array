@@ -72,5 +72,13 @@ function flat(arr, depth = 1) {
   }
   return res.reverse();
 }
-  
 
+with reduce。一个比较简练的版本
+function flat(arr, depth = 1) {
+  if (depth > 0) {
+    return arr.reduce((a, v) => 
+      [...a, ...(Array.isArray(v) ? flat(v, depth--) : [v])], []
+      )
+  }
+  return arr;
+}
