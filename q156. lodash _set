@@ -1,0 +1,24 @@
+function set(obj, path, value) {
+  let pathArr;
+  if (Array.isArray(path)) {
+    pathArr = path;
+  } else {
+    path = path.replace(/\[/g, '.');
+    path = path.replace(/]/g, '.');
+    pathArr = path.split('.');
+    pathArr = pathArr.filter(p => p !== '');
+  }
+  let currObj = obj;
+  pathArr.forEach((p, index) => {
+    console.log(currObj, p)
+    if (index === pathArr.length-1) {
+      currObj[p] = value;
+    } else {
+      const newObj = String(Number(pathArr[index+1])) === pathArr[index+1] ? [] : {};
+      currObj[p] = currObj[p] || newObj;
+      currObj = currObj[p];
+    }
+  })
+}
+
+
