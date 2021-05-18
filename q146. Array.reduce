@@ -1,0 +1,12 @@
+Array.prototype.myReduce = function (callback, intial) {
+  if (!intial && this.length === 0) throw new Error('need innitial value');
+  let i;
+  if (arguments.length >= 2) {sum = intial; i = 0;}
+  else {sum = this[0]; i = 1;}
+
+  while(i < this.length) {
+    sum = callback(sum, this[i], i, this);
+    i++;
+  }
+  return sum;
+}
